@@ -220,8 +220,8 @@ def get_air_station_mapping(file):
         for i in f.readlines():
             i.split(',')
             station=i[0]
-            latitude=i[2]
-            longtitude=i[1]
+            latitude=float(i[2])
+            longtitude=float(i[1])
             if station not in namelist:
                 namelist.append(station)
             if station not in mapping:
