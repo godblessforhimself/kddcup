@@ -174,10 +174,44 @@ def name_to_names(station,air_map,grid_map):
     lomin=round(longtitude,1)
     lamax=lamin+0.1
     lomax=lomin+0.1
-    lamin=str(lamin)
-    lamax=str(lamax)
-    lomin=str(lomin)
-    lomax=str(lomax)
+    lamin=str(round(lamin,1))
+    lamax=str(round(lamax,1))
+    lomin=str(round(lomin,1))
+    lomax=str(round(lomax,1))
+    sub1={}
+    sub2={}
+    name0=''
+    name1=''
+    name2=''
+    name3=''
+    if lamin in grid_map:
+        sub1=grid_map[lamin]
+    else:
+        print('lamin:%s not in grid_map'%lamin)
+    if lamax in grid_map:
+        sub2=grid_map[lamax]
+    else:
+        print('lamax:%s not in grid_map'%lamax)
+    if lomin in sub1:
+        name0=sub1[lomin]
+    else:
+        print('lomin:%s not in sub1'%lomin)
+        print(sub1)
+    if lomax in sub1:
+        name1=sub1[lomax]
+    else:
+        print('lomax:%s not in sub1'%lomax)
+        print(sub1)
+    if lomin in sub2:
+        name2=sub2[lomin]
+    else:
+        print('lomin:%s not in sub2'%lomin)
+        print(sub2)
+    if lomax in sub2:
+        name3=sub1[lomax]
+    else:
+        print('lomax:%s not in sub2'%lomax)
+        print(sub2)
     name0=grid_map[lamin][lomin]
     name1=grid_map[lamin][lomax]
     name2=grid_map[lamax][lomin]
@@ -233,8 +267,8 @@ def get_grid_mapping(file):
         for line in f.readlines():
             data=line.split(',')
             name=data[0]
-            latitude=data[1]
-            longtitude=data[2]
+            latitude=str(round(float(data[1]),1))
+            longtitude=str(round(float(data[2]),1))
             if latitude not in mapping:
                 mapping[latitude]={longtitude:name}
             else:
