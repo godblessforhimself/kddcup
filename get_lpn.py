@@ -226,11 +226,12 @@ def average(n0,n1,n2,n3,la,lo):
     arg2=(1-la)*(1-lo)
     arg3=(1-la)*lo
     time=n0[3]
+    #修复
     temperature=arg0*n0[4]+arg1*n1[4]+arg2*n2[4]+arg3*n3[4]
-    pressure=arg0*n0[4]+arg1*n1[4]+arg2*n2[4]+arg3*n3[4]
-    humidity=arg0*n0[4]+arg1*n1[4]+arg2*n2[4]+arg3*n3[4]
-    wind_direction=arg0*n0[4]+arg1*n1[4]+arg2*n2[4]+arg3*n3[4]
-    wind_speed=arg0*n0[4]+arg1*n1[4]+arg2*n2[4]+arg3*n3[4]
+    pressure=arg0*n0[5]+arg1*n1[5]+arg2*n2[5]+arg3*n3[5]
+    humidity=arg0*n0[6]+arg1*n1[6]+arg2*n2[6]+arg3*n3[6]
+    wind_direction=arg0*n0[7]+arg1*n1[7]+arg2*n2[7]+arg3*n3[7]
+    wind_speed=arg0*n0[8]+arg1*n1[8]+arg2*n2[8]+arg3*n3[8]
     return [time,temperature,pressure,humidity,wind_direction,wind_speed]
 
 def chazhi(stationlist,grid_dict,air_map,grid_map):
