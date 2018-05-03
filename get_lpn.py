@@ -217,8 +217,8 @@ def get_air_station_mapping(file):
     namelist=[]
     mapping={}
     with open(file,'r') as f:
-        for i in f.readlines():
-            i.split(',')
+        for it in f.readlines():
+            i=it.split(',')
             station=i[0]
             latitude=float(i[2])
             longtitude=float(i[1])
@@ -256,5 +256,5 @@ if __name__=='__main__':
             data=query(air_weather_dict,air,time,station)
             feed_data.append(data)
     #you can use autosave below
-    #autosave(feed_data,'')
+    autosave(feed_data,'data/feed_data.csv')
             
