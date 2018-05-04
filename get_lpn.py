@@ -26,7 +26,7 @@ def autosave(obj,file):
         print('save to %s'%store)
         pickle.dump(obj,f)
         
-def query(weather,air,time,station,deltatime):
+def query(weather,air,time,station,n):
     #从weather和air中查询time,station
     #返回[weather at time, air at time, air at time + deltatime]
     #若缺失越界返回0
@@ -39,25 +39,29 @@ def query(weather,air,time,station,deltatime):
         return 1
     if check(time)==0:
         return 0
-    
     start=datetime.strptime(time,timeformat)
-    end=start+timedelta(hours=deltatime)
-    nexttime=end.strftime(timeformat)
-    if time in weather and time in air and nexttime in air:
-        arg1=weather[time]
-        arg2=air[time]
-        arg3=air[nexttime]
-        if station in arg1 and station in arg2 and station in arg3:
-            weather_t=arg1[station]
-            air_0=arg2[station]
-            air_1=arg3[station]
-            #保证数据有效，则返回
-            return [weather_t,air_0,air_1]
+    ret=[]
+    for i in range(0,n):
+        timetemp=(start+timedelta(hours=i)).strftime(timeformat)
+        if not timetemp in air or not timetemp in weather:
+            return 0
+        arg1=weather[timetemp]
+        arg2=air[timetemp]
+        if station in arg1 and station in arg2:
+            ret.append(arg1[station])
+            ret.append(arg2[station])
         else:
             return 0
+    end=(start+timedelta(hours=n)).strftime(timeformat)
+    if not end in air:
+        return 0
+    arg=air[end]
+    if station in arg:
+        ret.append(arg[station])
+        return ret
     else:
         return 0
-    return 0
+
 def deltatime(time):
     #计算时间差
     d=datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
@@ -291,7 +295,8 @@ if __name__=='__main__':
     for time in timelist:
         for station in stationlist:
             data=query(air_weather_dict,air,time,station,deltatime)
-            feed_data.append(data)
+            if data != 0:
+                feed_data.append(data)
     #you can use autosave below
     autosave(feed_data,'data/feed_data.csv')
             
