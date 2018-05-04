@@ -26,7 +26,7 @@ def autosave(obj,file):
         print('save to %s'%store)
         pickle.dump(obj,f)
         
-def query(weather,air,time,station):
+def query(weather,air,time,station,deltatime):
     #从weather和air中查询time,station
     #返回[weather at time, air at time, air at time + deltatime]
     #若缺失越界返回0
@@ -39,7 +39,7 @@ def query(weather,air,time,station):
         return 1
     if check(time)==0:
         return 0
-    deltatime=1
+    
     start=datetime.strptime(time,timeformat)
     end=start+timedelta(hours=deltatime)
     nexttime=end.strftime(timeformat)
@@ -286,9 +286,11 @@ if __name__=='__main__':
     grid_dict_map=get_grid_mapping(grid_mapping_file)
     air_weather_dict=chazhi(stationlist,weather,air_station_map,grid_dict_map)
     feed_data=[]
+    #设置deltatime
+    deltatime=2
     for time in timelist:
         for station in stationlist:
-            data=query(air_weather_dict,air,time,station)
+            data=query(air_weather_dict,air,time,station,deltatime)
             feed_data.append(data)
     #you can use autosave below
     autosave(feed_data,'data/feed_data.csv')
