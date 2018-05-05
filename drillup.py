@@ -316,16 +316,16 @@ if __name__=='__main__':
     t1=time.clock()
     print('start use %f seconds'%(t1-t0))
     t0=t1
+    
     for time_t in timelist:
-        for station in stationlist:
-            data=query(air_weather_dict,air,time_t,stationlist)
-            if data != 0:
-                feed_data.append(data)
-                cnt+=1
-                if cnt%100000==0:
-                    t1=time.clock()
-                    print('add %d item in feed_data, use %f seconds'%(cnt,t1-t0))
-                    t0=t1
+        data=query(air_weather_dict,air,time_t,stationlist)
+        if data != 0:
+            feed_data.append(data)
+            cnt+=1
+            if cnt%100000==0:
+                t1=time.clock()
+                print('add %d item in feed_data, use %f seconds'%(cnt,t1-t0))
+                t0=t1
     #you can use autosave below
     autosave(feed_data,'data/drillup_data.csv')
             
