@@ -258,7 +258,7 @@ def average(n0,n1,n2,n3,la,lo):
 def chazhi(stationlist,grid_dict,air_map,grid_map):
     # input: air station, grid's air dict, air station [name,(x,y)]mapping, grid point [name,(x,y)]mapping,
     # output: station's air dict
-    airstation=autoload('data/weather_of_air_station.***')
+    #airstation=autoload('data/weather_of_air_station.***')
     if airstation!=0:
         return airstation
     airstation={}
@@ -322,7 +322,7 @@ if __name__=='__main__':
         if data != 0:
             feed_data.append(data)
             cnt+=1
-            if cnt%100000==0:
+            if cnt%1000==0:
                 t1=time.clock()
                 print('add %d item in feed_data, use %f seconds'%(cnt,t1-t0))
                 t0=t1

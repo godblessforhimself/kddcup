@@ -10,7 +10,7 @@ air_file='data/beijing_17_18_aq.csv'
 station_mapping_file='data/beijingairmapping.csv'
 grid_mapping_file='data/Beijing_grid_weather_station.csv'
 from datetime import datetime,date,timedelta
-import time,pickle,os
+import time,pickle,os,math
 def autoload(file):
     f=file.split('.')
     store=f[0]
@@ -174,14 +174,17 @@ def name_to_names(station,air_map,grid_map):
         return 0
     latitude=station_pos[0] #纬度
     longtitude=station_pos[1]#经度
-    lamin=round(latitude,1)
-    lomin=round(longtitude,1)
+    lamin=math.floor(10*latitude)/10
+    lomin=math.floor(10*longtitude)/10
     lamax=lamin+0.1
     lomax=lomin+0.1
     lamin=str(round(lamin,1))
     lamax=str(round(lamax,1))
     lomin=str(round(lomin,1))
     lomax=str(round(lomax,1))
+    if lomax=='116.39999999999999':
+        print(longtitude)
+        input()
     sub1={}
     sub2={}
     name0=''
