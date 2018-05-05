@@ -10,7 +10,7 @@ air_file='data/beijing_17_18_aq.csv'
 station_mapping_file='data/beijingairmapping.csv'
 grid_mapping_file='data/Beijing_grid_weather_station.csv'
 from datetime import datetime,date,timedelta
-import time,pickle,os
+import time,pickle,os,math
 def autoload(file):
     f=file.split('.')
     store=f[0]
@@ -33,7 +33,8 @@ def query(weather,air,time,stationlist):
     #保证weather air dict中每一项都是有效的
     timeformat='%Y-%m-%d %H:%M:%S'
     start=datetime.strptime(time,timeformat)
-    ret=[]
+    airlist=[]
+    weatherlist=[]
     def findNear(air,start,station):
         n=1
         while 1:
@@ -50,19 +51,18 @@ def query(weather,air,time,stationlist):
                 print('n=%d,what happens? %s'%(n,station))
                 return 0
         
-    if start in weather and start in air:
-        airlist=[]
-        weatherlist=[]
+    if time in weather and time in air:
+        
         for station in stationlist:
-            if station in air[start]:
-                airlist.append(air[start][station])
+            if station in air[time]:
+                airlist.append(air[time][station])
             else:
                 tmp=findNear(air,start,station)
                 if tmp==0:
                     return 0
                 airlist.append(tmp)
-            if station in weather[start]:
-                weatherlist.append(weather[start][station])
+            if station in weather[time]:
+                weatherlist.append(weather[time][station])
             else:
                 tmp=findNear(weather,start,station)
                 if tmp==0:
@@ -181,14 +181,17 @@ def name_to_names(station,air_map,grid_map):
         return 0
     latitude=station_pos[0] #纬度
     longtitude=station_pos[1]#经度
-    lamin=round(latitude,1)
-    lomin=round(longtitude,1)
+    lamin=math.floor(10*latitude)/10
+    lomin=math.floor(10*longtitude)/10
     lamax=lamin+0.1
     lomax=lomin+0.1
     lamin=str(round(lamin,1))
     lamax=str(round(lamax,1))
     lomin=str(round(lomin,1))
     lomax=str(round(lomax,1))
+    if lomax=='116.39999999999999':
+        print(longtitude)
+        input()
     sub1={}
     sub2={}
     name0=''
@@ -230,8 +233,8 @@ def name_to_names(station,air_map,grid_map):
     return name0,name1,name2,name3,latitude,longtitude
 def average(n0,n1,n2,n3,la,lo):
     #utc_time,temperature,pressure,humidity,wind_direction,wind_speed
-    la=10*(la-round(la,1))
-    lo=10*(lo-round(lo,1))
+    la=10*(la-math.floor(10*la)/10)
+    lo=10*(lo-math.floor(10*lo)/10)
     arg0=la*(1-lo)
     arg1=la*lo
     arg2=(1-la)*(1-lo)
@@ -246,6 +249,8 @@ def average(n0,n1,n2,n3,la,lo):
     #third 替换两项：风速和风向
     if wind_direction < 0 or wind_direction > 360:
         print('weather wind_direction is %f'%wind_direction)
+        print('arg[%f,%f,%f,%f] [%f,%f,%f,%f]'%(arg0,arg1,arg2,arg3,n0[7],n1[7],n2[7],n3[7]))
+        input()
     east_west=wind_speed*math.sin(wind_direction/180*math.pi)
     south_north=-wind_speed*math.cos(wind_direction/180*math.pi)
     return [time,temperature,pressure,humidity,east_west,south_north]
@@ -253,7 +258,11 @@ def average(n0,n1,n2,n3,la,lo):
 def chazhi(stationlist,grid_dict,air_map,grid_map):
     # input: air station, grid's air dict, air station [name,(x,y)]mapping, grid point [name,(x,y)]mapping,
     # output: station's air dict
+    airstation=autoload('data/weather_of_air_station.***')
+    if airstation!=0:
+        return airstation
     airstation={}
+    
     for time in grid_dict:
         if not time in airstation:
             airstation[time]={}
@@ -293,6 +302,7 @@ def get_grid_mapping(file):
 
     return mapping
 if __name__=='__main__':
+    t0=time.clock()
     dp=air_dict(air_file)
     air=dp[0]
     timelist=dp[1]
@@ -302,11 +312,20 @@ if __name__=='__main__':
     grid_dict_map=get_grid_mapping(grid_mapping_file)
     air_weather_dict=chazhi(stationlist,weather,air_station_map,grid_dict_map)
     feed_data=[]
-    for time in timelist:
+    cnt=0
+    t1=time.clock()
+    print('start use %f seconds'%(t1-t0))
+    t0=t1
+    for time_t in timelist:
         for station in stationlist:
-            data=query(air_weather_dict,air,time,stationlist)
+            data=query(air_weather_dict,air,time_t,stationlist)
             if data != 0:
                 feed_data.append(data)
+                cnt+=1
+                if cnt%100000==0:
+                    t1=time.clock()
+                    print('add %d item in feed_data, use %f seconds'%(cnt,t1-t0))
+                    t0=t1
     #you can use autosave below
     autosave(feed_data,'data/drillup_data.csv')
             
